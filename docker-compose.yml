@@ -1,0 +1,11 @@
+version: '3.4'
+services:
+  api:
+    container_name: aggregator-api
+    build:
+      context: .
+      target: developer
+    ports:
+      - "8080:8080"
+    volumes:
+      - ".:/usr/app"
