@@ -30,7 +30,7 @@ async def inbound_slack(request):
         noti_obj = {
             "msg": req['event']['text'],
             "from_program": "slack",
-            "time_recieved": datetime.fromtimestamp(req['event_time']),
+            "time_received": datetime.fromtimestamp(req['event_time']),
             "sender_name": get_user.json()['profile']['display_name'],
             "url": "https://aggregator-app.slack.com",
             "read": False
