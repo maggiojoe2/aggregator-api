@@ -5,7 +5,7 @@ import os
 import requests
 from sanic import Sanic
 from sanic.response import text, json
-from sanic_cors impo rt CORS
+from sanic_cors import CORS
 
 from aggregator.db import save_to_db, retrieve_objects_from_db
 from aggregator.log import logger, LOGGING_CONFIG_DEFAULTS
