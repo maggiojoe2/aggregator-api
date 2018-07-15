@@ -5,5 +5,5 @@ all: requirements
 .PHONY: requirements
 requirements:
 	@echo "Updating requirements.txt"
-	pip install -r requirements.txt
-	pip freeze > requirements.txt
+	pip3 install -r requirements.txt
+	pip3 freeze > requirements.txt
