@@ -9,8 +9,6 @@ services:
       - "8080:8080"
     volumes:
       - ".:/usr/app"
-    environment:
-      
   mongodb:
     image: mongo:3.6
     container_name: mongodb
