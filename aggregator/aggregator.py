@@ -1,8 +1,13 @@
 """Main module for Aggregator API"""
+from datetime import datetime
+
+import requests
 from sanic import Sanic
 from sanic.response import text
 
 from aggregator.log import logger, LOGGING_CONFIG_DEFAULTS
+
+SLACK_AUTH_TOKEN = 'xoxp-399767144951-399767145271-398050719808-ee8f7b330196aee008cc4f1907ed6546'
 
 
 app = Sanic(__name__, log_config=LOGGING_CONFIG_DEFAULTS)
@@ -12,16 +17,21 @@ app.static('/test', 'docker-compose.yml')
 @app.route('/slack', methods=['POST'])
 def inbound_slack(request):
     """inbound post messages from slack"""
-#     if request.form.get('token') == SLACK_WEBHOOK_SECRET:
-#         channel = request.form.get('channel_name')
-#         username = request.form.get('user_name')
-#         text = request.form.get('text')
-#         inbound_message = username + " in " + channel + " says: " + text
-#         print(inbound_message)
-#     return Response(), 200
     req = request.json
     logger.info(str(req))
-    if "challenge" in req.keys():
+    if req['type'] == 'url_verification':
+        logger.info('Responding with: %s', req['challenge'])
         return text(req['challenge'])
+    elif req['type'] == 'event_callback':
+        logger.info('Message recieved')
+        r = requests.post('https://slack.com/api/users.profile.get', data={'token': SLACK_AUTH_TOKEN, 'user': req['event']['user']})
+        noti_obj = {
+            "msg": req['event']['text'],
+            "from_program": "slack",
+            "time_recieved": datetime.fromtimestamp(req['event_time']),
+            "sender_name": r.json()['profile']['display_name']
+        }
+        logger.info('Notification Object: %s', noti_obj)
+        return text('Success')
 
-    return
+    return text('Not Found', 404)
