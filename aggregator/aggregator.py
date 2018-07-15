@@ -5,12 +5,14 @@ import os
 import requests
 from sanic import Sanic
 from sanic.response import text, json
+from sanic_cors impo rt CORS
 
 from aggregator.db import save_to_db, retrieve_objects_from_db
 from aggregator.log import logger, LOGGING_CONFIG_DEFAULTS
 
 
 app = Sanic(__name__, log_config=LOGGING_CONFIG_DEFAULTS)
+CORS(app, automatic_options=True)
 app.static('/test', 'docker-compose.yml')
 
 
@@ -49,6 +51,7 @@ async def get_notifications(_):
     noti_list = []
     for noti in notifications:
         noti['_id'] = str(noti['_id'])
+        noti['time_received'] = noti['time_received'].isoformat()
         noti_list.append(noti)
     logger.info(noti_list)
     return json({"data": noti_list})
