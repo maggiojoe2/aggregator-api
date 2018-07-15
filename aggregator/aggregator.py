@@ -8,8 +8,6 @@ from sanic.response import text
 from aggregator.db import save_to_db
 from aggregator.log import logger, LOGGING_CONFIG_DEFAULTS
 
-SLACK_AUTH_TOKEN = 'xoxp-399767144951-399767145271-398050719808-ee8f7b330196aee008cc4f1907ed6546'
-
 
 app = Sanic(__name__, log_config=LOGGING_CONFIG_DEFAULTS)
 app.static('/test', 'docker-compose.yml')
