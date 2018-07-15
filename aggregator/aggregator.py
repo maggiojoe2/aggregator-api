@@ -45,6 +45,10 @@ async def get_notifications(_):
     """Get notifications."""
     query = {'read': False}
     notifications = await retrieve_objects_from_db(query, 'email_db', 'email_collection', find_one=False)
-    noti_list = list(notifications)
+
+    noti_list = []
+    for noti in notifications:
+        noti['_id'] = str(noti['_id'])
+        noti_list.append(noti)
     logger.info(noti_list)
     return json({"data": noti_list})
