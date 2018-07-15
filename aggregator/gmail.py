@@ -25,7 +25,7 @@ async def get_facebook():
 
     # Call the Gmail API
     results = service.users().messages().list(userId='me',
-                                              q="from:notification+zrdevrpidrgz@facebookmail.com is:unread").execute()
+                                              q="{from:notification+zrdevrpidrgz@facebookmail.com from:notify@twitter.com} is:unread").execute()
     messages = []
 
     if 'messages' in results:
@@ -35,7 +35,7 @@ async def get_facebook():
     while 'nextPageToken' in results:
         page_token = results['nextPageToken']
         results = service.users().messages().list(userId='me',
-                                                  q="from:notification+zrdevrpidrgz@facebookmail.com is:unread", pageToken=page_token).execute()
+                                                  q="{from:notification+zrdevrpidrgz@facebookmail.com from:notify@twitter.com} is:unread", pageToken=page_token).execute()
         messages.extend(results['messages'])
 
     for count in messages:
@@ -46,10 +46,14 @@ async def get_facebook():
         for item in results['payload']['headers']:
             if item['name'] == 'Subject':
                 return_obj['msg'] = item['value']
+            if item['name'] == 'From' and (('Facebook' in item['value']) or ('facebook' in item['value'])):
+                return_obj['from_program'] = 'facebook'
+                return_obj['url'] = 'https://www.facebook.com/profile'
 
             return_obj['time_received'] = datetime.utcnow()
-            return_obj['from_program'] = 'facebook'
-            return_obj['url'] = 'https://www.facebook.com/profile'
+            if 'from_program' not in return_obj.keys():
+                return_obj['from_program'] = 'twitter'
+                return_obj['url'] = 'https://twitter.com/i/notifications'
             return_obj['read'] = False
 
         return_obj['email_id'] = count['id']

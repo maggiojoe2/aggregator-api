@@ -93,7 +93,6 @@ async def delete_notification(_, noti_id):
 @app.route('/notifications', methods=['GET'])
 async def get_notifications(_):
     """Get notifications."""
-    query = {}
     db = await connect_to_mongo()
     notifications = db['email_db']['email_collection'].find().sort([('time_received', -1)])
     # notifications = await retrieve_objects_from_db(query, 'email_db', 'email_collection', find_one=False)
