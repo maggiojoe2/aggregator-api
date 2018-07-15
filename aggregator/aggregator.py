@@ -1,5 +1,6 @@
 """Main module for Aggregator API"""
 from datetime import datetime
+import os
 
 import requests
 from sanic import Sanic
@@ -23,7 +24,7 @@ def inbound_slack(request):
         return text(req['challenge'])
     elif req['type'] == 'event_callback':
         logger.info('Message recieved')
-        get_user = requests.post('https://slack.com/api/users.profile.get', data={'token': SLACK_AUTH_TOKEN, 'user': req['event']['user']})
+        get_user = requests.post('https://slack.com/api/users.profile.get', data={'token': os.environ['SLACK_AUTH_TOKEN'], 'user': req['event']['user']})
         noti_obj = {
             "msg": req['event']['text'],
             "from_program": "slack",
