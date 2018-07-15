@@ -5,6 +5,7 @@ import requests
 from sanic import Sanic
 from sanic.response import text
 
+from aggregator.db import save_to_db
 from aggregator.log import logger, LOGGING_CONFIG_DEFAULTS
 
 SLACK_AUTH_TOKEN = 'xoxp-399767144951-399767145271-398050719808-ee8f7b330196aee008cc4f1907ed6546'
@@ -24,14 +25,15 @@ def inbound_slack(request):
         return text(req['challenge'])
     elif req['type'] == 'event_callback':
         logger.info('Message recieved')
-        r = requests.post('https://slack.com/api/users.profile.get', data={'token': SLACK_AUTH_TOKEN, 'user': req['event']['user']})
+        get_user = requests.post('https://slack.com/api/users.profile.get', data={'token': SLACK_AUTH_TOKEN, 'user': req['event']['user']})
         noti_obj = {
             "msg": req['event']['text'],
             "from_program": "slack",
             "time_recieved": datetime.fromtimestamp(req['event_time']),
-            "sender_name": r.json()['profile']['display_name']
+            "sender_name": get_user.json()['profile']['display_name']
         }
         logger.info('Notification Object: %s', noti_obj)
+        save_to_db(noti_obj)
         return text('Success')
 
     return text('Not Found', 404)

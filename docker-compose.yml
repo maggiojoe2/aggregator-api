@@ -18,7 +18,7 @@ services:
     volumes:
       - /data/db/
     ports:
-      - "27017:27017"
+      - "8082:27017"
   mongo-express:
     image: mongo-express
     container_name: mongo

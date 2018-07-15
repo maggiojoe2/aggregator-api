@@ -1,8 +1,10 @@
+"""Database Helpers."""
 from pymongo.mongo_client import MongoClient
 from pymongo import errors
 from pymongo.cursor import Cursor
 from bson.objectid import ObjectId
 from typing import Dict, List, Union
+
 
 async def connect_to_mongo() -> MongoClient:
     """Connect to MongoDB.
@@ -11,7 +13,8 @@ async def connect_to_mongo() -> MongoClient:
         client(MongoClient) : MongoDB client
 
     """
-    client: MongoClient = MongoClient('mongodb://mongodb:27017/', username="admin", password='pass', authSource="admin")
+    client: MongoClient = MongoClient(
+        'mongodb://mongodb:27017/', username="admin", password='pass', authSource="admin")
     return client
 
 
@@ -114,7 +117,7 @@ async def save_to_db(received_json: Dict[str, object]) -> ObjectId:
     try:
         client: MongoClient = await connect_to_mongo()
         object_id: ObjectId = await mongo_store_info(received_json, client, database='email_db',
-                                                      collection='email_collection')
+                                                     collection='email_collection')
         await disconnect_mongo(client)
 
     except errors.PyMongoError:
@@ -143,7 +146,8 @@ async def update_fields(info_for_query: List[Dict[str, Union[str, int, None]]], 
     try:
         for query in info_for_query:
             client[database][collection].update_one({"_id": object_id},
-                                                    {query["operation"]: {query["field"]: query["field_value"]}},
+                                                    {query["operation"]: {
+                                                        query["field"]: query["field_value"]}},
                                                     upsert=False)
 
     except errors.PyMongoError:
