@@ -9,6 +9,8 @@ services:
       - "8080:8080"
     volumes:
       - ".:/usr/app"
+    environment:
+      SLACK_AUTH_TOKEN: ${SLACK_AUTH_TOKEN}
   mongodb:
     image: mongo:3.6
     container_name: mongodb
