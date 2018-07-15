@@ -9,6 +9,7 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 from aggregator.db import retrieve_objects_from_db, save_to_db
 from aggregator.log import logger
+from datetime import datetime
 
 
 async def get_facebook():
@@ -45,8 +46,8 @@ async def get_facebook():
         for item in results['payload']['headers']:
             if item['name'] == 'Subject':
                 return_obj['msg'] = item['value']
-            if item['name'] == 'Date':
-                return_obj['time_received'] = item['value']
+
+            return_obj['time_received'] = datetime.utcnow()
             return_obj['from_program'] = 'facebook'
             return_obj['url'] = 'https://www.facebook.com/profile'
             return_obj['read'] = False
