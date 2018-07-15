@@ -4,7 +4,7 @@ import os
 
 import requests
 
-# from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from bson.objectid import ObjectId
 from sanic import Sanic
 from sanic.response import text, json
@@ -12,7 +12,7 @@ from sanic_cors import CORS
 
 from aggregator.db import save_to_db, retrieve_objects_from_db, connect_to_mongo, disconnect_mongo, update_fields
 from aggregator.log import logger, LOGGING_CONFIG_DEFAULTS
-# from gmail import get_acebook
+from aggregator.gmail import get_facebook
 
 
 app = Sanic(__name__, log_config=LOGGING_CONFIG_DEFAULTS)
@@ -20,18 +20,18 @@ CORS(app, automatic_options=True)
 app.static('/test', 'docker-compose.yml')
 
 
-# @app.listener('before_server_start')
-# async def initialize_scheduler(_, loop):
-#     """Initialize scheduler for periodic sending of scheduled emails every minute.
+@app.listener('before_server_start')
+async def initialize_scheduler(_, loop):
+    """Initialize scheduler for periodic sending of scheduled emails every minute.
 
-#     Args:
-#         loop (AbstractEventLoop): event loop
-#     """
-#     logger.info('Initializing Scheduler.')
-#     scheduler = AsyncIOScheduler({'event_loop': loop}, timezone='UTC')
-#     scheduler.add_job(get_facebook, 'interval', minutes=1)
-#     scheduler.start()
-#     logger.info('Scheduler started.')
+    Args:
+        loop (AbstractEventLoop): event loop
+    """
+    logger.info('Initializing Scheduler.')
+    scheduler = AsyncIOScheduler({'event_loop': loop}, timezone='UTC')
+    scheduler.add_job(get_facebook, 'interval', seconds=10)
+    scheduler.start()
+    logger.info('Scheduler started.')
 
 
 @app.route('/slack', methods=['POST'])
@@ -88,8 +88,6 @@ async def delete_notification(_, noti_id):
         return text("Deleted")
     except Exception:
         return text('Failed to delete.', 400)
-
-
 
 
 @app.route('/notifications', methods=['GET'])

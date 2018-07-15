@@ -54,7 +54,7 @@ async def retrieve_objects_from_db(query: dict, database: str, collection: str,
     if find_one:
         email_object = client[database][collection].find_one(query)
     else:
-        email_object = client[database][collection].find(query)
+        email_object = client[database][collection].find(query).sort({'time_received': -1})
     if not email_object:
         return {}
     await disconnect_mongo(client)
