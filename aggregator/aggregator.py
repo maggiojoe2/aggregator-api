@@ -10,7 +10,7 @@ from sanic import Sanic
 from sanic.response import text, json
 from sanic_cors import CORS
 
-from aggregator.db import save_to_db, retrieve_objects_from_db, update_fields
+from aggregator.db import save_to_db, retrieve_objects_from_db, connect_to_mongo, disconnect_mongo, update_fields
 from aggregator.log import logger, LOGGING_CONFIG_DEFAULTS
 # from gmail import get_acebook
 
@@ -64,20 +64,38 @@ async def inbound_slack(request):
 @app.route('/notifications/<noti_id>', methods=['PUT'])
 async def update_status(request, noti_id):
     """Update status to read or unread."""
-    if request.args['read']:
-        query = [
-            {"field": "read", "field_value": bool(request.args['read']), "operation": "$set"}
-        ]
-        await update_fields(query, ObjectId(noti_id), database='email_db', collection='email_collection')
-        return text('Success', 200)
+    try:
+        if request.args['read']:
+            query = [
+                {"field": "read", "field_value": bool(request.args['read']), "operation": "$set"}
+            ]
+            await update_fields(query, ObjectId(noti_id), database='email_db', collection='email_collection')
+            return text('Success', 200)
 
-    return text('Cannot update that field.', 400)
+        return text('Cannot update that field.', 400)
+    except Exception:
+        return text('Cannot update field', 400)
+
+
+@app.route('/notifications/<noti_id>', methods=['DELETE'])
+async def delete_notification(_, noti_id):
+    """Delete notifications"""
+    try:
+        db = await connect_to_mongo()
+        db['email_db']['email_collection'].delete_one({"_id": ObjectId(noti_id)})
+        await disconnect_mongo(db)
+
+        return text("Deleted")
+    except Exception:
+        return text('Failed to delete.', 400)
+
+
 
 
 @app.route('/notifications', methods=['GET'])
 async def get_notifications(_):
     """Get notifications."""
-    query = {'read': False}
+    query = {}
     notifications = await retrieve_objects_from_db(query, 'email_db', 'email_collection', find_one=False)
 
     noti_list = []
