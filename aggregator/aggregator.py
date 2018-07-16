@@ -43,7 +43,7 @@ async def inbound_slack(request):
         logger.info('Responding with: %s', req['challenge'])
         return text(req['challenge'])
     elif req['type'] == 'event_callback':
-        if any(word in req['event']['text'] for word in ['test', 'hello']):
+        if any(word in req['event']['text'] for word in ['Viasat', 'Viasat 3', 'meeting', 'wifi']):
             logger.info('Message recieved')
             get_user = requests.post('https://slack.com/api/users.profile.get', data={'token': str(os.environ['SLACK_AUTH_TOKEN']), 'user': req['event']['user']})
             noti_obj = {
