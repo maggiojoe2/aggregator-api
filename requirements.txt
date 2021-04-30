@@ -25,7 +25,7 @@ pylint==1.9.2
 pymongo==3.7.0
 pytz==2018.5
 requests==2.19.1
-rsa==3.4.2
+rsa==4.7
 sanic==0.7.0
 Sanic-Cors==0.9.4
 Sanic-Plugins-Framework==0.6.2.dev20180617
