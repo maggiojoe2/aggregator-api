@@ -37,6 +37,6 @@ uritemplate==3.0.0
 urllib3==1.23
 uvloop==0.11.0
 websocket-client==0.48.0
-websockets==5.0.1
+websockets==9.1
 Werkzeug==0.14.1
 wrapt==1.10.11
